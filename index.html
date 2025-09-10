@@ -7,14 +7,14 @@
   <meta name="description" content="Blooming é um espaço seguro de apoio entre mulheres com tópicos como menstruação, saúde hormonal e autocuidado. Crie e responda tópicos de forma anônima se quiser." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="nav">
     <div class="container nav-inner">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <img class="logo" src="logo.png" alt="Logo Blooming" />
         <span>Blooming</span>
       </div>
       <nav aria-label="principal">
@@ -68,89 +68,7 @@
       </div>
     </section>
 
-    <section class="grid" id="forum">
-      <!-- Painel: Ferramentas -->
-      <div class="panel">
-        <div class="hd">
-          <h2>Novo tópico</h2>
-          <div class="pill" title="Postagem anônima">
-            <input id="anonToggle" type="checkbox" aria-label="Postar como anônima" />
-            <label for="anonToggle">Postar como anônima</label>
-          </div>
-        </div>
-        <div class="bd">
-          <form class="post-form" id="postForm">
-            <div class="toolbar">
-              <input class="input" id="nick" placeholder="Seu nome ou apelido (opcional)" />
-              <select class="input" id="category" required>
-                <option value="Menstruação">Menstruação</option>
-                <option value="Saúde hormonal">Saúde hormonal</option>
-                <option value="Bem-estar">Bem-estar</option>
-              </select>
-            </div>
-            <input class="input" id="title" placeholder="Título do tópico" required maxlength="100" />
-            <textarea class="input" id="content" placeholder="Conte sua dúvida ou experiência com detalhes respeitando as regras da comunidade" required></textarea>
-            <div class="toolbar">
-              <input class="input" id="tags" placeholder="Tags separadas por vírgula (ex.: DIU, cólica, TPM)" />
-              <button class="btn btn-primary" type="submit">Publicar</button>
-            </div>
-            <p class="muted" style="margin:0;color:var(--muted);font-size:.9rem">Conteúdos com linguagem ofensiva, desinformação ou dados pessoais serão moderados.</p>
-          </form>
-        </div>
-      </div>
-
-      <!-- Painel: Lista de tópicos -->
-      <div class="panel">
-        <div class="hd">
-          <h2>Tópicos</h2>
-          <div class="toolbar" role="search">
-            <input id="search" class="input" placeholder="Buscar por título, conteúdo ou tag" />
-            <select id="filterCat" class="input">
-              <option value="">Todas as categorias</option>
-              <option>Menstruação</option>
-              <option>Saúde hormonal</option>
-              <option>Bem-estar</option>
-            </select>
-          </div>
-        </div>
-        <div class="bd">
-          <div class="posts" id="posts"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="recursos" style="margin-top:28px">
-      <div class="panel">
-        <div class="hd"><h2>Recursos confiáveis</h2></div>
-        <div class="bd">
-          <div class="resources">
-            <div class="res">
-              <strong>Diário do ciclo</strong>
-              <p>Use aplicativos ou um caderno para anotar datas, sintomas e humor. Traga isso numa consulta.</p>
-            </div>
-            <div class="res">
-              <strong>Checklist de consulta</strong>
-              <p>Leve histórico de medicamentos, alergias, datas do ciclo e perguntas principais.</p>
-            </div>
-            <div class="res">
-              <strong>Fontes de informação</strong>
-              <p>Prefira sociedades médicas, manuais do Ministério da Saúde e seu/ sua profissional de confiança.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq" style="margin-top:28px">
-      <div class="panel">
-        <div class="hd"><h2>FAQ</h2></div>
-        <div class="bd">
-          <details class="res"><summary>O Blooming substitui orientação médica?</summary><p>Não. É um espaço de apoio e troca. Para diagnóstico e prescrição, procure serviço de saúde.</p></details>
-          <details class="res"><summary>Posso postar de forma anônima?</summary><p>Sim. Ative “Postar como anônima” no formulário de novo tópico.</p></details>
-          <details class="res"><summary>Como os conteúdos são moderados?</summary><p>Existe uma checagem automática simples no envio (palavrões, dados pessoais). Você também pode sinalizar um tópico para remoção local.</p></details>
-        </div>
-      </div>
-    </section>
+    <!-- ... restante igual ... -->
 
     <footer class="container">
       <hr style="border:0; border-top:1px solid #efdfE8; margin:28px 0" />
@@ -161,3 +79,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+

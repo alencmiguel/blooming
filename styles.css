@@ -1,10 +1,10 @@
 :root{
-  /* degrade: branco -> lilás */
-  --bg-start:#ffffff;     /* branco */
-  --bg-mid:#efe6ff;       /* lilás bem clarinho (transição) */
-  --bg-end:#be9dff;       /* lilás principal */
+  
+  --bg-start:#ffffff;     
+  --bg-mid:#efe6ff;       
+  --bg-end:#be9dff;       
 
-  /* resto das cores do tema (deixe como já estão no seu arquivo) */
+  
   --surface:#ffffff;
   --text:#2f2933;
   --muted:#6b6470;
@@ -29,7 +29,7 @@ body{
   font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   line-height:1.5; -webkit-font-smoothing:antialiased;
 
-  /* degradê branco → lilás */
+ 
   background-image: linear-gradient(
     to bottom,
     var(--bg-start) 0%,
@@ -45,12 +45,12 @@ a{color:var(--primary); text-decoration:none}
 a:hover{text-decoration:underline}
 .container{width:min(1100px, 92vw); margin-inline:auto}
 
-/* Header translúcido combinando com o degradê */
+
 
 .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
 .brand{display:flex; align-items:center; gap:12px; font-weight:700}
 
-/* LOGO como imagem (com badge branco para contraste) */
+
 .logo{
   height:40px;
   width:auto;
@@ -75,7 +75,7 @@ nav a:hover{background:#fde5ee}
 .hero{padding:72px 0 32px}
 .hero-grid{display:grid; grid-template-columns:1.2fr .8fr; gap:28px; align-items:center}
 
-/* TÍTULOS com a fonte redondinha */
+
 h1, h2, h3{
   font-family:"Quicksand", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
@@ -139,3 +139,4 @@ footer{margin:44px 0 24px; color:#6f6370}
   .grid{grid-template-columns:1fr}
   .resources{grid-template-columns:1fr}
 }
+

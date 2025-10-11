@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+<link rel="stylesheet" href="chat.css">
+<script src="chat.js" defer></script>
+
 <body>
   <header class="nav">
     <div class="container nav-inner">
@@ -19,13 +22,15 @@
         <span>Blooming</span>
       </div>
       <nav aria-label="principal">
-        <ul>
-          <li><a href="#sobre">Sobre</a></li>
-          <li><a href="#forum">Fórum</a></li>
-          <li><a href="#recursos">Recursos</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </nav>
+  <ul>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="forum.html">Fórum</a></li>
+    <li><a href="recursos.html">Recursos</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+</nav>
+
+
     </div>
   </header>
 
@@ -69,56 +74,19 @@
       </div>
     </section>
 
-    <section class="grid" id="forum">
-      
-      <div class="panel">
-        <div class="hd">
-          <h2>Novo tópico</h2>
-          <div class="pill" title="Postagem anônima">
-            <input id="anonToggle" type="checkbox" aria-label="Postar como anônima" />
-            <label for="anonToggle">Postar como anônima</label>
-          </div>
-        </div>
-        <div class="bd">
-          <form class="post-form" id="postForm">
-            <div class="toolbar">
-              <input class="input" id="nick" placeholder="Seu nome ou apelido (opcional)" />
-              <select class="input" id="category" required>
-                <option value="Menstruação">Menstruação</option>
-                <option value="Saúde hormonal">Saúde hormonal</option>
-                <option value="Bem-estar">Bem-estar</option>
-              </select>
-            </div>
-            <input class="input" id="title" placeholder="Título do tópico" required maxlength="100" />
-            <textarea class="input" id="content" placeholder="Conte sua dúvida ou experiência com detalhes respeitando as regras da comunidade" required></textarea>
-            <div class="toolbar">
-              <input class="input" id="tags" placeholder="Tags separadas por vírgula (ex.: DIU, cólica, TPM)" />
-              <button class="btn btn-primary" type="submit">Publicar</button>
-            </div>
-            <p class="muted" style="margin:0;color:var(--muted);font-size:.9rem">Conteúdos com linguagem ofensiva, desinformação ou dados pessoais serão moderados.</p>
-          </form>
-        </div>
-      </div>
+    <section id="forum" class="panel">
+  <div class="hd">
+    <h2>Fórum — últimas publicações</h2>
+    <div class="cta">
+      <a class="btn btn-primary" href="forum.html">Criar publicação</a>
+      <a class="btn btn-outline" href="forum.html">Ver fórum completo</a>
+    </div>
+  </div>
+  <div class="bd">
+    <div id="postsHome" class="posts"></div>
+  </div>
+</section>
 
-     
-      <div class="panel">
-        <div class="hd">
-          <h2>Tópicos</h2>
-          <div class="toolbar" role="search">
-            <input id="search" class="input" placeholder="Buscar por título, conteúdo ou tag" />
-            <select id="filterCat" class="input">
-              <option value="">Todas as categorias</option>
-              <option>Menstruação</option>
-              <option>Saúde hormonal</option>
-              <option>Bem-estar</option>
-            </select>
-          </div>
-        </div>
-        <div class="bd">
-          <div class="posts" id="posts"></div>
-        </div>
-      </div>
-    </section>
 
     <section id="recursos" style="margin-top:28px">
       <div class="panel">
@@ -159,6 +127,6 @@
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>

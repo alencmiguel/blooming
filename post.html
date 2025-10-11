@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blooming — Publicação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .post-view{max-width:860px;margin:20px auto;display:grid;gap:16px}
+    .post-view .title{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700}
+    .comment{border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--surface)}
+    .comment .meta{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+    .comment-form .input, .comment-form textarea{width:100%}
+    .back-link{display:inline-flex;align-items:center;gap:8px;margin:10px 0}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .pill-btn{cursor:pointer}
+  </style>
+</head>
+<body>
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="Logo Blooming"/>
+      <span>Blooming</span>
+    </div>
+    <nav aria-label="principal">
+      <ul>
+        <li><a href="index.html#sobre">Sobre</a></li>
+        <li><a href="forum.html">Fórum</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+      <button id="themeToggle" class="pill" style="margin-left:12px">🌙 Modo escuro</button>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="post-view panel">
+    <div class="bd" id="postContainer"><!-- render via JS --></div>
+  </div>
+
+  <div class="panel" id="responder">
+    <div class="hd"><h2>Responder</h2></div>
+    <div class="bd">
+      <form id="commentForm" class="comment-form" style="display:grid;gap:10px">
+        <div class="toolbar">
+          <input class="input" id="cAuthor" placeholder="Seu nome (opcional)" />
+        </div>
+        <textarea class="input" id="cBody" placeholder="Escreva seu comentário" required></textarea>
+        <button class="btn btn-primary" type="submit">Enviar comentário</button>
+      </form>
+      <div style="height:10px"></div>
+      <div id="commentsList" class="posts"></div>
+    </div>
+  </div>
+
+  <p class="back-link"><a href="forum.html">← Voltar ao fórum</a></p>
+</main>
+
+<script src="theme.js"></script>
+<script>
+  // ===== helpers & storage =====
+  const $  = (q,root=document)=>root.querySelector(q);
+  const postsKey = 'blooming_posts';
+  const commentsKey = 'blooming_comments';
+  const postsStore = {
+    get(){ try { return JSON.parse(localStorage.getItem(postsKey)) || []; } catch { return []; } },
+    set(v){ localStorage.setItem(postsKey, JSON.stringify(v)); }
+  };
+  const commentsStore = {
+    map(){ try { return JSON.parse(localStorage.getItem(commentsKey)) || {}; } catch { return {}; } },
+    save(m){ localStorage.setItem(commentsKey, JSON.stringify(m)); },
+    list(id){ const m=this.map(); return m[id]||[]; },
+    push(id,c){ const m=this.map(); m[id]=m[id]||[]; m[id].push(c); this.save(m); }
+  };
+  const timeAgo = (ts)=>{
+    const d=Math.max(1,Math.floor((Date.now()-ts)/1000));
+    const u=[[31536000,'ano'],[2592000,'mês'],[604800,'semana'],[86400,'dia'],[3600,'hora'],[60,'min'],[1,'seg']];
+    for(const [s,n] of u){ if(d>=s){const v=Math.floor(d/s); return `${v} ${n}${v>1&&n!=='mês'?'s':''} atrás`; } }
+    return 'agora';
+  };
+
+  // ===== load post =====
+  const id = new URLSearchParams(location.search).get('id');
+  const posts = postsStore.get();
+  const post = posts.find(p=>p.id===id);
+  const box = $('#postContainer');
+
+  if(!post){
+    box.innerHTML = `<div class="notice">Publicação não encontrada.</div>`;
+  }else{
+    const tags = (post.tags||[]).map(t=>`<span class="pill">#${t}</span>`).join(' ');
+    box.innerHTML = `
+      <div class="meta">${post.category} • por <strong>${post.author||'Anônima'}</strong> • ${timeAgo(post.ts)}</div>
+      <div class="title">${post.title}</div>
+      <div class="body">${post.content}</div>
+      <div class="row">
+        <div class="chips">${tags}</div>
+        <div class="actions">
+          <button id="likeBtn" class="pill pill-btn">❤️ Curtir <span id="likeCount">${post.likes||post.votes||0}</span></button>
+          <a class="pill pill-btn" href="#responder" id="replyBtn">💬 Responder</a>
+          <button id="reportBtn" class="pill pill-btn" title="Ocultar do seu feed">🚩 Reportar</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ===== actions =====
+  $('#likeBtn')?.addEventListener('click', ()=>{
+    post.likes = (post.likes||post.votes||0) + 1;
+    const idx = posts.findIndex(p=>p.id===post.id);
+    posts[idx] = post; postsStore.set(posts);
+    $('#likeCount').textContent = post.likes;
+  });
+
+  $('#reportBtn')?.addEventListener('click', ()=>{
+    if(confirm('Ocultar esta publicação do seu feed?')){
+      post.hidden = true;
+      const idx = posts.findIndex(p=>p.id===post.id);
+      posts[idx] = post; postsStore.set(posts);
+      alert('Publicação sinalizada (oculta localmente).');
+    }
+  });
+
+  // ===== comments =====
+  function renderComments(){
+    const list = commentsStore.list(id).sort((a,b)=>b.ts-a.ts);
+    const el = $('#commentsList'); el.innerHTML='';
+    if(list.length===0){ el.innerHTML = `<div class="notice">Seja a primeira a comentar 🌸</div>`; return; }
+    for(const c of list){
+      const item = document.createElement('div');
+      item.className = 'comment';
+      item.innerHTML = `
+        <div class="meta">${c.author||'Anônima'} • ${timeAgo(c.ts)}</div>
+        <div class="body">${c.body}</div>
+      `;
+      el.appendChild(item);
+    }
+  }
+  renderComments();
+
+  $('#commentForm')?.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const author = $('#cAuthor').value.trim() || 'Anônima';
+    const body = $('#cBody').value.trim();
+    if(!body) return;
+    commentsStore.push(id, {author, body, ts: Date.now()});
+    e.target.reset();
+    renderComments();
+  });
+
+  // se veio com #responder, foca no textarea
+  if(location.hash==='#responder'){ setTimeout(()=>$('#cBody')?.focus(), 50); }
+</script>
+</body>
+</html>

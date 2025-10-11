@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blooming — Fórum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .forum-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .forum-toolbar > *{flex:1}
+    .vote{display:inline-flex;align-items:center;gap:6px}
+    .vote button{cursor:pointer;border:1px solid #ead5e0;background:#fff;border-radius:999px;padding:4px 8px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .edit-area{margin-top:8px}
+  </style>
+</head>
+<body>
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="Logo Blooming"/>
+      <span>Blooming</span>
+    </div>
+    <nav aria-label="principal">
+      <ul>
+        <li><a href="index.html#sobre">Sobre</a></li>
+        <li><a href="forum.html" aria-current="page">Fórum</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="panel">
+    <div class="hd"><h2>Criar nova publicação</h2></div>
+    <div class="bd">
+      <form id="newForm" class="post-form">
+        <div class="forum-toolbar">
+          <input class="input" id="nick" placeholder="Seu nome ou apelido (opcional)" />
+          <select class="input" id="category" required>
+            <option>Menstruação</option>
+            <option>Saúde hormonal</option>
+            <option>Bem-estar</option>
+          </select>
+        </div>
+        <input class="input" id="title" placeholder="Título da sua dúvida ou relato" required maxlength="100" />
+        <textarea class="input" id="content" placeholder="Escreva com detalhes (o que sente, há quanto tempo, o que já tentou, etc.)" required></textarea>
+        <div class="forum-toolbar">
+          <input class="input" id="tags" placeholder="Tags separadas por vírgula (ex.: DIU, cólica, TPM)" />
+          <button class="btn btn-primary" type="submit">Publicar</button>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center">
+          <input id="anonToggle" type="checkbox" /> Postar como anônima
+        </label>
+      </form>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="hd">
+      <h2>Publicações</h2>
+      <div class="forum-toolbar">
+        <input id="search" class="input" placeholder="Buscar por título, conteúdo ou tag" />
+        <select id="filterCat" class="input">
+          <option value="">Todas as categorias</option>
+          <option>Menstruação</option>
+          <option>Saúde hormonal</option>
+          <option>Bem-estar</option>
+        </select>
+      </div>
+    </div>
+    <div class="bd">
+      <div id="posts" class="posts"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ==== helpers & storage ====
+  const $ = (q,root=document)=>root.querySelector(q);
+  const postsKey = 'blooming_posts';
+  const store = {
+    get(){ try { return JSON.parse(localStorage.getItem(postsKey)) || []; } catch { return []; } },
+    set(v){ localStorage.setItem(postsKey, JSON.stringify(v)); }
+  };
+
+  // ==== seed com 2 exemplos (só se estiver vazio) ====
+  if (store.get().length === 0){
+    const seed = [
+      { id: crypto.randomUUID(), title:"Cólica forte no 1º dia — o que ajuda?", category:"Menstruação",
+        content:"No primeiro dia sinto cólicas intensas e enjoo. O que costuma ajudar vocês? Bolsa térmica? Algum cuidado na alimentação?",
+        tags:["cólica","1º dia"], author:"Luna", ts: Date.now()-86400000, votes:12, hidden:false },
+      { id: crypto.randomUUID(), title:"DIU de cobre aumentou meu fluxo — normal?", category:"Saúde hormonal",
+        content:"Coloquei DIU há 3 meses e o fluxo ficou maior. Li que pode acontecer no começo. Quanto tempo levou pra estabilizar pra vocês?",
+        tags:["DIU","fluxo"], author:"Anônima", ts: Date.now()-3600000*6, votes:7, hidden:false }
+    ];
+    store.set(seed);
+  }
+
+  // ==== render ====
+  function timeAgo(ts){
+    const s=Math.max(1,Math.floor((Date.now()-ts)/1000));
+    const u=[[31536000,'ano'],[2592000,'mês'],[604800,'semana'],[86400,'dia'],[3600,'hora'],[60,'minuto'],[1,'segundo']];
+    for(const [sec,name] of u){ if(s>=sec){ const v=Math.floor(s/sec); return `${v} ${name}${v>1&&name!=='mês'?'s':''} atrás`; } }
+    return 'agora';
+  }
+
+  function render(){
+    const posts = store.get().filter(p=>!p.hidden);
+    const q = ($('#search').value||'').toLowerCase().trim();
+    const cat = $('#filterCat').value;
+    const list = posts.filter(p=>{
+      const blob = (p.title+' '+p.content+' '+(p.tags||[]).join(' ')).toLowerCase();
+      const cq = !q || blob.includes(q);
+      const cc = !cat || p.category===cat;
+      return cq && cc;
+    }).sort((a,b)=> (b.votes||0)-(a.votes||0) || b.ts-a.ts);
+
+    const box = $('#posts');
+    box.innerHTML = '';
+    if(list.length===0){ box.innerHTML = `<div class="notice">Nenhuma publicação encontrada.</div>`; return; }
+
+    for(const p of list){
+      const el = document.createElement('article');
+      el.className = 'post';
+      const tags = (p.tags||[]).map(t=>`<span class="pill">#${t}</span>`).join(' ');
+      el.innerHTML = `
+        <div class="meta">${p.category} • por <strong>${p.author||'Anônima'}</strong> • ${timeAgo(p.ts)}</div>
+        <div class="title"><a class="post-link" href="post.html?id=${encodeURIComponent(p.id)}">${p.title}</a></div>
+        <div class="body" data-view>${p.content}</div>
+        <div class="edit-area" hidden>
+          <input class="input" data-title value="${p.title.replace(/"/g,'&quot;')}" />
+          <textarea class="input" data-content>${p.content}</textarea>
+          <input class="input" data-tags value="${(p.tags||[]).join(', ')}" placeholder="Tags (vírgula)"/>
+        </div>
+        <div class="actions">
+  <span class="vote">
+    <button data-up>▲</button><strong data-count>${p.votes||0}</strong>
+  </span>
+
+  <!-- NOVOS botões -->
+  <a class="pill pill-btn" href="post.html?id=${encodeURIComponent(p.id)}">Abrir</a>
+  <a class="pill pill-btn" href="post.html?id=${encodeURIComponent(p.id)}#responder">💬 Responder</a>
+
+  <!-- Já existiam -->
+  <button class="pill pill-btn" data-edit>✏️ Editar</button>
+  <button class="pill pill-btn" data-save hidden>💾 Salvar</button>
+  <button class="pill pill-btn" data-cancel hidden>↩ Cancelar</button>
+  <button class="pill pill-btn" data-report title="Ocultar do seu feed">🚩 Reportar</button>
+  <button class="pill pill-btn" data-del>🗑️ Excluir</button>
+</div>
+
+      `;
+
+      // actions
+      el.querySelector('[data-up]').addEventListener('click', ()=>{
+        const all = store.get(); const me = all.find(x=>x.id===p.id);
+        me.votes = (me.votes||0)+1; store.set(all);
+        el.querySelector('[data-count]').textContent = me.votes;
+      });
+
+      const editBtn   = el.querySelector('[data-edit]');
+      const saveBtn   = el.querySelector('[data-save]');
+      const cancelBtn = el.querySelector('[data-cancel]');
+      const view      = el.querySelector('[data-view]');
+      const area      = el.querySelector('.edit-area');
+      const ti        = el.querySelector('[data-title]');
+      const ta        = el.querySelector('[data-content]');
+      const tg        = el.querySelector('[data-tags]');
+
+      editBtn.addEventListener('click', ()=>{
+        view.hidden = true; area.hidden = false;
+        editBtn.hidden = true; saveBtn.hidden = false; cancelBtn.hidden = false;
+      });
+      cancelBtn.addEventListener('click', ()=>{
+        view.hidden = false; area.hidden = true;
+        editBtn.hidden = false; saveBtn.hidden = true; cancelBtn.hidden = true;
+      });
+      saveBtn.addEventListener('click', ()=>{
+        const all = store.get(); const me = all.find(x=>x.id===p.id);
+        me.title = ti.value.trim() || me.title;
+        me.content = ta.value.trim() || me.content;
+        me.tags = tg.value.split(',').map(s=>s.trim()).filter(Boolean);
+        store.set(all);
+        render();
+      });
+
+      el.querySelector('[data-report]').addEventListener('click', ()=>{
+        if(confirm('Ocultar esta publicação do seu feed?')){
+          const all = store.get(); const me = all.find(x=>x.id===p.id);
+          me.hidden = true; store.set(all); render();
+        }
+      });
+      el.querySelector('[data-del]').addEventListener('click', ()=>{
+        if(confirm('Excluir esta publicação?')){
+          const all = store.get().filter(x=>x.id!==p.id); store.set(all); render();
+        }
+      });
+
+      $('#posts').appendChild(el);
+    }
+  }
+
+  // ==== eventos ====
+  $('#newForm').addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const author = $('#anonToggle').checked ? 'Anônima' : ($('#nick').value.trim()||'Anônima');
+    const title = $('#title').value.trim();
+    const content = $('#content').value.trim();
+    const category = $('#category').value;
+    const tags = $('#tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+
+    const all = store.get();
+    all.push({ id: crypto.randomUUID(), title, content, category, tags, author, ts: Date.now(), votes:0, hidden:false });
+    store.set(all);
+    e.target.reset(); $('#anonToggle').checked=false;
+    render();
+  });
+
+  $('#search').addEventListener('input', render);
+  $('#filterCat').addEventListener('change', render);
+
+  render();
+</script>
+</body>
+</html>

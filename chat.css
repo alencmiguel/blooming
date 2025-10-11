@@ -1,0 +1,61 @@
+/* FAB */
+#blooming-chat-fab{
+  position:fixed; right:18px; bottom:18px; z-index:9999;
+  width:56px; height:56px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--primary); color:#fff; font-size:22px; cursor:pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+/* Painel */
+#blooming-chat-panel{
+  position:fixed; right:18px; bottom:86px; z-index:9999;
+  width:min(360px, 92vw); max-height:70vh; display:flex; flex-direction:column;
+  background: var(--surface); border:1px solid var(--border); border-radius:16px;
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+#blooming-chat-panel .bc-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 12px; border-bottom:1px solid var(--border);
+  background: transparent; color: var(--text);
+}
+#blooming-chat-panel .bc-head button{
+  background:transparent; border:0; color:var(--text); cursor:pointer; font-size:18px;
+}
+
+.bc-messages{
+  padding:12px; overflow:auto; display:grid; gap:8px;
+  background: transparent; color: var(--text);
+}
+.bc-user{
+  justify-self:end; max-width:85%;
+  background: linear-gradient(180deg, #fbe6f1, #ffd9ea);
+  color:#3a2f38; padding:10px 12px; border-radius:14px 14px 4px 14px; border:1px solid #f1dbe6;
+}
+.bc-bot{
+  justify-self:start; max-width:85%;
+  background: var(--surface); color: var(--text);
+  padding:10px 12px; border-radius:14px 14px 14px 4px; border:1px solid var(--border);
+}
+
+.bc-form{
+  display:flex; gap:8px; padding:10px; border-top:1px solid var(--border);
+  background: transparent;
+}
+.bc-form input{
+  flex:1; padding:10px 12px; border-radius:12px; border:1px solid var(--border);
+  background:#fff; color:#2f2933;
+}
+.bc-form button{
+  padding:10px 14px; border-radius:12px; border:0; background: var(--primary); color:#fff; font-weight:600; cursor:pointer;
+}
+
+/* Dark theme harmonização */
+:root[data-theme="dark"] .bc-user{
+  background: linear-gradient(180deg, #2a1f2a, #3a2842);
+  color: #f2eef7; border-color: #2a2033;
+}
+:root[data-theme="dark"] .bc-form input{
+  background:#1b1722; color:#f2eef7; border-color:#2a2033;
+}
